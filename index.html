@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Transformations Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Geometric Transformations - Rotation</h1>
+    <p>Use the buttons below to rotate the shape around the origin (0,0).</p>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <div class="controls">
+        <button onclick="rotateShape(90)">Rotate 90°</button>
+        <button onclick="rotateShape(180)">Rotate 180°</button>
+        <button onclick="rotateShape(270)">Rotate 270°</button>
+        <button onclick="resetShape()">Reset</button>
+    </div>
+    <p id="coordinates"></p>
+    <script src="script.js"></script>
+</body>
+</html>
