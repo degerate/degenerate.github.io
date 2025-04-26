@@ -1,19 +1,127 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seat Arranger</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seat Arranger</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; }
+    .container { margin: auto; max-width: 600px; }
+    h1 { font-size: 24px; margin-bottom: 20px; }
+    button { margin: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    table { margin: 20px auto; border-collapse: collapse; }
+    td { border: 1px solid #333; width: 120px; height: 40px; padding: 5px; }
+    .boy { background-color: #ADD8E6; }
+    .girl { background-color: #FFC0CB; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Seat Arranger</h1>
-        <button onclick="randomizeAll()">Randomize All</button>
-        <button onclick="separateBoysAndGirls()">Separate Boys and Girls</button>
-        <table id="seatTable"><tbody></tbody></table>
-    </div>
-    <script src="script.js"></script>
+  <div class="container">
+    <h1>Seat Arranger</h1>
+    <button onclick="randomizeAll()">Randomize All</button>
+    <button onclick="separateBoysAndGirls()">Separate Boys and Girls</button>
+    <table id="seatTable"><tbody></tbody></table>
+  </div>
+
+  <script>
+    const students = [
+      { name: "1. Fionna", gender: "g" }, { name: "2. Arya", gender: "b" },
+      { name: "3. Aerish", gender: "g" }, { name: "4. Angela", gender: "g" },
+      { name: "5. Lio", gender: "b" }, { name: "6. Aviel", gender: "b" },
+      { name: "7. Kyara", gender: "g" }, { name: "8. Charles", gender: "b" },
+      { name: "9. Gavin", gender: "b" }, { name: "10. Audi", gender: "g" },
+      { name: "11. Ano", gender: "b" }, { name: "12. Edzhar", gender: "b" },
+      { name: "13. Caleb", gender: "b" }, { name: "14. Fabian", gender: "b" },
+      { name: "15. Astro", gender: "b" }, { name: "16. Satya", gender: "b" },
+      { name: "17. Grego", gender: "b" }, { name: "18. Hans", gender: "b" },
+      { name: "19. Evan", gender: "b" }, { name: "20. Hugo", gender: "b" },
+      { name: "21. Imelda", gender: "g" }, { name: "22. Nathan", gender: "b" },
+      { name: "23. Joy", gender: "g" }, { name: "24. Kennard", gender: "b" },
+      { name: "25. Niko", gender: "b" }, { name: "26. Mario", gender: "b" },
+      { name: "27. Michael", gender: "b" }, { name: "28. Ayu", gender: "g" },
+      { name: "29. Novandra", gender: "b" }, { name: "30. Rama", gender: "b" },
+      { name: "31. Quinn", gender: "b" }, { name: "32. Steven", gender: "b" },
+      { name: "33. William", gender: "b" }, { name: "34. Arian", gender: "b" }
+    ];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function displaySeats(arrangement) {
+      const tbody = document.getElementById('seatTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      for (let i = 0; i < 16; i++) {
+        const row = tbody.insertRow();
+        const left = arrangement[i * 2];
+        const right = arrangement[i * 2 + 1];
+
+        const cell1 = row.insertCell();
+        if (left) {
+          cell1.textContent = left.name;
+          cell1.className = left.gender === 'b' ? 'boy' : 'girl';
+        }
+
+        const cell2 = row.insertCell();
+        if (right) {
+          cell2.textContent = right.name;
+          cell2.className = right.gender === 'b' ? 'boy' : 'girl';
+        }
+      }
+    }
+
+    function randomizeAll() {
+      let freshList = JSON.parse(JSON.stringify(students));
+      const lio = freshList.find(s => s.name.includes('Lio'));
+      const astro = freshList.find(s => s.name.includes('Astro'));
+      freshList = freshList.filter(s => s !== lio && s !== astro);
+      shuffle(freshList);
+
+      const randomIndex = Math.floor(Math.random() * (freshList.length));
+      freshList.splice(randomIndex, 0, lio, astro);
+
+      displaySeats(freshList);
+    }
+
+    function separateBoysAndGirls() {
+      let freshList = JSON.parse(JSON.stringify(students));
+      let girls = freshList.filter(s => s.gender === 'g');
+      let boys = freshList.filter(s => s.gender === 'b');
+
+      const lio = boys.find(s => s.name.includes('Lio'));
+      const astro = boys.find(s => s.name.includes('Astro'));
+      boys = boys.filter(s => s !== lio && s !== astro);
+
+      shuffle(girls);
+      shuffle(boys);
+
+      const arrangement = [];
+
+      for (let i = 0; i < 4; i++) {
+        arrangement[i * 2] = girls[i];
+        arrangement[i * 2 + 1] = girls[i + 4];
+      }
+
+      const boySeats = [];
+      for (let i = 8; i < 32; i++) boySeats.push(i);
+      shuffle(boySeats);
+
+      const seat1 = boySeats.pop();
+      const seat2 = seat1 % 2 === 0 ? seat1 + 1 : seat1 - 1;
+      arrangement[seat1] = lio;
+      arrangement[seat2] = astro;
+
+      let boyIndex = 0;
+      for (const seat of boySeats) {
+        arrangement[seat] = boys[boyIndex++];
+      }
+
+      displaySeats(arrangement);
+    }
+  </script>
 </body>
 </html>
