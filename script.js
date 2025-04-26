@@ -33,8 +33,18 @@ function displaySeats(arrangement) {
         const row = tbody.insertRow();
         const cell1 = row.insertCell(0);
         const cell2 = row.insertCell(1);
-        cell1.textContent = arrangement[i * 2] ? arrangement[i * 2].name : '';
-        cell2.textContent = arrangement[i * 2 + 1] ? arrangement[i * 2 + 1].name : '';
+
+        const leftStudent = arrangement[i * 2];
+        const rightStudent = arrangement[i * 2 + 1];
+
+        if (leftStudent) {
+            cell1.textContent = leftStudent.name;
+            cell1.className = leftStudent.gender === 'b' ? 'boy' : 'girl';
+        }
+        if (rightStudent) {
+            cell2.textContent = rightStudent.name;
+            cell2.className = rightStudent.gender === 'b' ? 'boy' : 'girl';
+        }
     }
 }
 
@@ -44,6 +54,7 @@ function randomizeAll() {
     const astro = list.find(s => s.name.includes('Astro'));
     list = list.filter(s => s !== lio && s !== astro);
     shuffle(list);
+
     const insertIndex = Math.floor(Math.random() * (list.length - 1));
     list.splice(insertIndex, 0, lio, astro);
     displaySeats(list);
@@ -55,14 +66,17 @@ function separateBoysAndGirls() {
     const lio = boys.find(s => s.name.includes('Lio'));
     const astro = boys.find(s => s.name.includes('Astro'));
     boys = boys.filter(s => s !== lio && s !== astro);
+
     shuffle(girls);
     shuffle(boys);
+
     const combined = [];
 
-    // girls sit at seats 1-4 and 17-20
+    // Girls in seat 1-4 and 17-20
     for (let i = 0; i < 4; i++) combined[i] = girls[i];
     for (let i = 0; i < 4; i++) combined[16 + i] = girls[4 + i];
 
+    // Assign boy seats
     const boySeats = [];
     for (let i = 4; i < 16; i++) boySeats.push(i);
     for (let i = 20; i < 32; i++) boySeats.push(i);
