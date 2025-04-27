@@ -75,17 +75,33 @@
     }
 
     function randomizeAll() {
-      let freshList = JSON.parse(JSON.stringify(students));
-      const lio = freshList.find(s => s.name.includes('Lio'));
-      const astro = freshList.find(s => s.name.includes('Astro'));
-      freshList = freshList.filter(s => s !== lio && s !== astro);
-      shuffle(freshList);
+  let freshList = JSON.parse(JSON.stringify(students));
+  const lio = freshList.find(s => s.name.includes('Lio'));
+  const astro = freshList.find(s => s.name.includes('Astro'));
+  freshList = freshList.filter(s => s !== lio && s !== astro);
 
-      const randomIndex = Math.floor(Math.random() * (freshList.length));
-      freshList.splice(randomIndex, 0, lio, astro);
+  shuffle(freshList);
 
-      displaySeats(freshList);
+  const arrangement = Array(32).fill(null); // 32 seats (left + right)
+
+  // Choose a random row (0-15)
+  const randomRow = Math.floor(Math.random() * 16);
+  const leftSeatIndex = randomRow * 2;
+  const rightSeatIndex = leftSeatIndex + 1;
+
+  // Place Lio in the left column, Astro in the right column
+  arrangement[leftSeatIndex] = lio;
+  arrangement[rightSeatIndex] = astro;
+
+  let studentIndex = 0;
+  for (let i = 0; i < 32; i++) {
+    if (!arrangement[i]) {
+      arrangement[i] = freshList[studentIndex++];
     }
+  }
+
+  displaySeats(arrangement);
+}
 
     function separateBoysAndGirls() {
       let freshList = JSON.parse(JSON.stringify(students));
@@ -101,6 +117,7 @@
 
       const arrangement = [];
 
+      // Girls fill 1st to 4th row in column 1 and 2
       for (let i = 0; i < 4; i++) {
         arrangement[i * 2] = girls[i];
         arrangement[i * 2 + 1] = girls[i + 4];
@@ -112,12 +129,15 @@
 
       const seat1 = boySeats.pop();
       const seat2 = seat1 % 2 === 0 ? seat1 + 1 : seat1 - 1;
+
       arrangement[seat1] = lio;
       arrangement[seat2] = astro;
 
       let boyIndex = 0;
       for (const seat of boySeats) {
-        arrangement[seat] = boys[boyIndex++];
+        if (!arrangement[seat]) {
+          arrangement[seat] = boys[boyIndex++];
+        }
       }
 
       displaySeats(arrangement);
